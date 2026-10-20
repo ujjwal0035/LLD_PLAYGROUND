@@ -1,25 +1,24 @@
 package com.lld.playground.RateLimiter;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class FixedWindowRateLimiter {
     private final int maxAllowedSize;
     private final long windowSizeInMillis;
 
-    private final ConcurrentHashMap<String, windowState> userSate;
+    private final ConcurrentHashMap<String, WindowState> userSate;
 
-    private static class windowState{
+    private static class WindowState{
         private final long window;
-        private final AtomicInteger reqCount;
+        private final int reqCount;
 
-        windowState(long windowValue, AtomicInteger count){
+        WindowState(long windowValue, int count){
             this.window = windowValue;
             this.reqCount = count;
         }
     }
 
-    FixedWindowRateLimiter(int maxAllowedSize, long windowSizeInMillis){
+    public FixedWindowRateLimiter(int maxAllowedSize, long windowSizeInMillis){
         this.maxAllowedSize = maxAllowedSize;
         this.windowSizeInMillis = windowSizeInMillis;
 
@@ -27,25 +26,23 @@ public class FixedWindowRateLimiter {
     }
 
     public boolean isRequestAllowed(String userId){
-        long currentTimeinMillis = System.currentTimeMillis();
+        long windowValue = System.currentTimeMillis() / this.windowSizeInMillis;
 
-        long windowValue = currentTimeinMillis/this.windowSizeInMillis;
+        // compute the hashmap entry for the userId
+        // if userId is not presetnt then return the new WindowState with count 1
+        // if userId present then check for the window value, if it is same then increment the count and check for maxAllowedSize
+        // if the window value is deferent then reset the count to 1 and update the window value
 
-        // if windowValue is not there add it
-        if(!userSate.containsKey(userId)){
-            userSate.put(userId,new windowState(windowValue, new AtomicInteger(0)));
-            return true;
-        }
+        WindowState state = userSate.compute(userId, (key, existingState)->{
 
-        long currentWindow = userSate.get(userId).window;
+            // checking the userId is not present or window value is different
+            if(existingState == null || existingState.window != windowValue){
+                return new WindowState(windowValue, 1);
+            }
 
-        if(currentWindow != windowValue){
-            userSate.get(userId).reqCount.incrementAndGet();
-            return true;
-        }
+            return new WindowState(windowValue, existingState.reqCount + 1);
+        });
 
-        int currentCount = userSate.get(userId).reqCount.incrementAndGet();
-
-        return currentCount < this.maxAllowedSize;
+        return state.reqCount < this.maxAllowedSize;
     }
 }

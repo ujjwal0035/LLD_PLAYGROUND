@@ -1,6 +1,7 @@
 package com.lld.playground.dto;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class ApiResponse<T> {
     private boolean success;
@@ -21,6 +22,10 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> success(String message, T data) {
         return new ApiResponse<>(true, message, data);
+    }
+
+    public static ApiResponse<Map<String, Object>> error(String rateLimitExceeded) {
+        return null;
     }
 
     public boolean isSuccess() {

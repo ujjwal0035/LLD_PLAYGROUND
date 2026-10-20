@@ -1,0 +1,17 @@
+{
+  "name": "load_test",
+  "version": "0.0.1",
+  "description": "this is load test ",
+  "license": "ISC",
+  "author": "Ujjwal gupta",
+  "type": "commonjs",
+  "main": "load.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "docker run --rm -i --add-host=host.docker.internal:host-gateway -v \"${PWD}:/scripts\" grafana/k6 run /scripts/load.js"
+  },
+  "dependencies": {
+    "k6": "^0.0.0"
+  },
+  "devDependencies": {}
+}

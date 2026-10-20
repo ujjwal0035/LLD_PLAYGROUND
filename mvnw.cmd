@@ -30,7 +30,11 @@
 @IF "%JAVA_HOME:~-4%"=="\bin" SET JAVA_HOME=%JAVA_HOME:~0,-4%
 @IF "%JAVA_HOME:~-5%"=="\bin\" SET JAVA_HOME=%JAVA_HOME:~0,-5%
 @IF NOT DEFINED JAVA_HOME (
-  IF EXIST "C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot" SET JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot
+  IF EXIST "C:\Users\ujjwa\.jdks\corretto-17.0.12" (
+    SET JAVA_HOME=C:\Users\ujjwa\.jdks\corretto-17.0.12
+  ) ELSE IF EXIST "C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot" (
+    SET JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot
+  )
 )
 @IF "%__MVNW_ARG0_NAME__%"=="" (SET __MVNW_ARG0_NAME__=%~nx0)
 @SET __MVNW_CMD__=
